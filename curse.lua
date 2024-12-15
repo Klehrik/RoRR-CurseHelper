@@ -21,7 +21,7 @@ Curse.apply = function(actor, id, amount)
 
     local maxhp = calc_curse(actorData)
     actor:recalculate_stats()
-    add_curse_callback(actor, maxhp)
+    add_curse_callbacks(actor, maxhp)
 end
 
 
@@ -36,7 +36,7 @@ Curse.remove = function(actor, id)
 
     local maxhp = calc_curse(actorData)
     actor:recalculate_stats()
-    add_curse_callback(actor, maxhp)
+    add_curse_callbacks(actor, maxhp)
 end
 
 
@@ -63,8 +63,10 @@ function calc_curse(table)
 end
 
 
-function add_curse_callback(actor, maxhp)
+function add_curse_callbacks(actor, maxhp)
     actor:remove_callback("curseHelper-hpCap")
+    -- actor:remove_callback("curseHelper-healReduction")
+
     if maxhp < 1.0 then
         actor:onPostStep("curseHelper-hpCap", function(actor)
             actor.hp = math.min(actor.hp, actor.maxhp * maxhp)
@@ -76,6 +78,11 @@ function add_curse_callback(actor, maxhp)
             else disable_shield_regen_sfx = 0
             end
         end)
+
+        -- actor:onHeal("curseHelper-healReduction", function(actor, heal_amount)
+        --     return heal_amount * maxhp
+        -- end)
+
     else disable_shield_regen_sfx = 0
     end
 end
