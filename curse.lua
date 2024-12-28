@@ -88,15 +88,11 @@ function add_curse_callbacks(actor, maxhp)
 end
 
 
-Callback.add("onPlayerHUDDraw", "curseHelper-playerCurseDisplay", function(self, other, result, args)
-    local p = Player.get_client()
-    if not p:exists() then return end
-    local pData = p:get_data()
-    
+Callback.add("onPlayerHUDDraw", "curseHelper-playerCurseDisplay", function(player, hud_x, hud_y)
+    local pData = player:get_data()
     if  pData["curseHelper-maxhp"]
     and pData["curseHelper-maxhp"] < 1.0 then
-        local x, y = args[3].value, args[4].value
-        gm.draw_rectangle(x + 139 - ((1 - pData["curseHelper-maxhp"]) * 157), y + 39, x + 139, y + 45, true)
+        gm.draw_rectangle(hud_x + 139 - ((1 - pData["curseHelper-maxhp"]) * 157), hud_y + 39, hud_x + 139, hud_y + 45, true)
     end
 end)
 
