@@ -21,6 +21,8 @@ Works multiplicatively with other curse applications
 (e.g., 2 applications of `0.5` will result in 25% maximum health remaining).  
 Specifying an existing ID will override it.  
 
+Can be called as either host or client and it will automatically sync.
+
 **Parameters:**  
 | **Parameter** | **Type** | **Description** |
 | ------------- | -------- | --------------- |
@@ -35,6 +37,8 @@ Curse.remove(actor, id) -> nil
 ```
 
 Removes an instance of maximum health reduction from the actor.  
+
+Can be called as either host or client and it will automatically sync.
 
 **Parameters:**  
 | **Parameter** | **Type** | **Description** |

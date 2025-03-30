@@ -3,40 +3,89 @@
 Curse = Proxy.new()
 
 local disable_shield_regen_sfx = 0
+local packet_apply, packet_remove
+
+
+
+-- ========== Initialize ==========
+
+Initialize(function()
+    packet_apply = Packet.new()
+    packet_apply:onReceived(function(message, player)
+        local actor = message:read_instance()
+        local id = message:read_string()
+        local amount = message:read_float()
+
+        -- Received by host
+        if Net.is_host() then
+            Curse.apply(actor, id, amount)
+            return
+        end
+
+        -- Receive by client
+        apply_curse_internal(actor, id, amount)
+    end)
+
+
+    packet_remove = Packet.new()
+    packet_remove:onReceived(function(message, player)
+        local actor = message:read_instance()
+        local id = message:read_string()
+
+        -- Received by host
+        if Net.is_host() then
+            Curse.remove(actor, id, amount)
+            return
+        end
+
+        -- Receive by client
+        remove_curse_internal(actor, id, amount)
+    end)
+end)
 
 
 
 -- ========== Static Methods ==========
 
 Curse.apply = function(actor, id, amount)
-    actor = Wrap.wrap(actor)
+    apply_curse_internal(actor, id, amount)
 
-    if not Instance.exists(actor.value) then log.error("Actor does not exist", 2) end
-    if not id then log.error("ID unspecified", 2) end
-    if not amount then log.error("Amount unspecified", 2) end
-    if amount <= 0 then return end
+    -- Sync
+    if Net.is_host() then
+        local message = packet_apply:message_begin()
+        message:write_instance(actor)
+        message:write_string(id)
+        message:write_float(amount)
+        message:send_to_all()
 
-    local actorData = actor:get_data()
-    actorData[id] = math.min(amount, 1.0)
+    elseif Net.is_client() then
+        local message = packet_apply:message_begin()
+        message:write_instance(actor)
+        message:write_string(id)
+        message:write_float(amount)
+        message:send_to_host()
 
-    local maxhp = calc_curse(actorData)
-    actor:recalculate_stats()
-    add_curse_callbacks(actor, maxhp)
+    end
 end
 
 
 Curse.remove = function(actor, id)
-    actor = Wrap.wrap(actor)
+    remove_curse_internal(actor, id)
 
-    if not Instance.exists(actor.value) then log.error("Actor does not exist", 2) end
-    if not id then log.error("ID unspecified", 2) end
+    -- Sync
+    if Net.is_host() then
+        local message = packet_remove:message_begin()
+        message:write_instance(actor)
+        message:write_string(id)
+        message:send_to_all()
 
-    local actorData = actor:get_data()
-    actorData[id] = nil
+    elseif Net.is_client() then
+        local message = packet_remove:message_begin()
+        message:write_instance(actor)
+        message:write_string(id)
+        message:send_to_host()
 
-    local maxhp = calc_curse(actorData)
-    actor:recalculate_stats()
-    add_curse_callbacks(actor, maxhp)
+    end
 end
 
 
@@ -60,6 +109,38 @@ function calc_curse(table)
     end
     table["curseHelper-maxhp"] = maxhp
     return maxhp
+end
+
+
+function apply_curse_internal(actor, id, amount)
+    actor = Wrap.wrap(actor)
+
+    if not Instance.exists(actor.value) then log.error("Actor does not exist", 2) end
+    if not id then log.error("ID unspecified", 2) end
+    if not amount then log.error("Amount unspecified", 2) end
+    if amount <= 0 then return end
+
+    local actorData = actor:get_data()
+    actorData[id] = math.min(amount, 1.0)
+
+    local maxhp = calc_curse(actorData)
+    actor:recalculate_stats()
+    add_curse_callbacks(actor, maxhp)
+end
+
+
+function remove_curse_internal(actor, id)
+    actor = Wrap.wrap(actor)
+
+    if not Instance.exists(actor.value) then log.error("Actor does not exist", 2) end
+    if not id then log.error("ID unspecified", 2) end
+
+    local actorData = actor:get_data()
+    actorData[id] = nil
+
+    local maxhp = calc_curse(actorData)
+    actor:recalculate_stats()
+    add_curse_callbacks(actor, maxhp)
 end
 
 
