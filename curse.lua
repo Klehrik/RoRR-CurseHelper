@@ -181,8 +181,10 @@ end)
 -- Contribution by @0n_x
 gm.post_script_hook(gm.constants.hud_draw_health, function(self, other, result, args)
     local actor = Instance.wrap(args[1].value)
-    if actor.m_id == Player.get_client().m_id and actor.maxhp ~= Curse.get_effective(actor) then
-        gm.draw_set_color(Color.from_hex(0xffffff))
+    if self.object_index == gm.constants.oP
+    and actor.m_id == Player.get_client().m_id
+    and actor.maxhp ~= Curse.get_effective(actor) then
+        gm.draw_set_color(Color.WHITE)
         gm.draw_rectangle(math.floor(actor.x + 0.5 + 37) - 75 * (1 - Curse.get_effective(actor) / actor.maxhp),
             math.floor(actor.y + 0.5 - 74), math.floor(actor.x + 0.5 + 37), math.floor(actor.y + 0.5 - 69), true)
     end

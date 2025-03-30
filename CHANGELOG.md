@@ -1,3 +1,6 @@
+### v1.0.4
+* Fix for mini health bar overlay appearing when it shouldn't.
+
 ### v1.0.3
 * Now overlays on top of the mini health bar (thanks @0n_x).
 
