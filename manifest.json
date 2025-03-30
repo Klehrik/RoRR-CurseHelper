@@ -1,6 +1,6 @@
 ﻿{
 	"name": "CurseHelper",
-	"version_number": "1.0.2",
+	"version_number": "1.0.3",
 	"website_url": "https://github.com/Klehrik/RoRR-CurseHelper",
 	"description": "Allows for applying visible maximum health reduction.",
 	"dependencies": [

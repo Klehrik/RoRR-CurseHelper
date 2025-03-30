@@ -1,3 +1,6 @@
+### v1.0.3
+* Now overlays on top of the mini health bar (thanks @0n_x).
+
 ### v1.0.2
 * Now online synced.
 
