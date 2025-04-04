@@ -181,7 +181,8 @@ end)
 -- Contribution by @0n_x
 gm.post_script_hook(gm.constants.hud_draw_health, function(self, other, result, args)
     local actor = Instance.wrap(args[1].value)
-    if self.object_index == gm.constants.oP
+    if  self
+    and self.object_index == gm.constants.oP
     and actor.m_id == Player.get_client().m_id
     and actor.maxhp ~= Curse.get_effective(actor) then
         gm.draw_set_color(Color.WHITE)

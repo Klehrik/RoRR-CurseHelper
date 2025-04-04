@@ -1,3 +1,6 @@
+### v1.0.5
+* Check if `self` exists in hook.
+
 ### v1.0.4
 * Fix for mini health bar overlay appearing when it shouldn't.
 
