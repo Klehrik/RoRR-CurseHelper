@@ -68,4 +68,4 @@ Join the [Return of Modding server](https://discord.gg/VjS57cszMq) for support.
 
 
 ### Additional Contributions
-@0n_x - Mini health bar overlay
+@0n_x - Mini health bar overlay and general fixes

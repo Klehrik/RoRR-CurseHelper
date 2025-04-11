@@ -1,11 +1,11 @@
 ﻿{
 	"name": "CurseHelper",
-	"version_number": "1.0.5",
+	"version_number": "1.0.6",
 	"website_url": "https://github.com/Klehrik/RoRR-CurseHelper",
 	"description": "Allows for applying visible maximum health reduction.",
 	"dependencies": [
-		"ReturnOfModding-ReturnOfModding-1.0.58",
-		"RoRRModdingToolkit-RoRR_Modding_Toolkit-1.2.16",
+		"ReturnOfModding-ReturnOfModding-1.0.65",
+		"RoRRModdingToolkit-RoRR_Modding_Toolkit-1.2.17",
 		"MGReturns-ENVY-1.2.0"
 	]
 }

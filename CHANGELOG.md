@@ -1,3 +1,6 @@
+### v1.0.6
+* Fix for buggy shield sfx.
+
 ### v1.0.5
 * Check if `self` exists in hook.
 

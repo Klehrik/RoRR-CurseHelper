@@ -155,7 +155,7 @@ function add_curse_callbacks(actor, maxhp)
 
             if actor.shield > actor.maxshield * maxhp then
                 actor.shield = actor.maxshield * maxhp
-                disable_shield_regen_sfx = math.min(disable_shield_regen_sfx + 1, 2)
+                disable_shield_regen_sfx = 2
             else disable_shield_regen_sfx = 0
             end
         end)
@@ -194,7 +194,7 @@ end)
 
 gm.pre_script_hook(gm.constants.sound_play_at, function(self, other, result, args)
     if disable_shield_regen_sfx >= 2 and args[1].value == 282.0 then
-        disable_shield_regen_sfx = math.min(disable_shield_regen_sfx + 1, 2)
+        disable_shield_regen_sfx = 2
         return false
     end
 end)
