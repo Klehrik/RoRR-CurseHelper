@@ -1,11 +1,8 @@
 -- Curse
-
 Curse = Proxy.new()
 
-local disable_shield_regen_sfx = 0
+
 local packet_apply, packet_remove
-
-
 
 -- ========== Initialize ==========
 
@@ -103,7 +100,7 @@ end
 function calc_curse(table)
     local maxhp = 1.0
     for k, v in pairs(table) do
-        if k ~= "curseHelper-maxhp" then
+        if k ~= "curseHelper-maxhp" and k ~= "curseHelper-disable_shield_regen_sfx" then
             maxhp = maxhp * (1 - v)
         end
     end
@@ -122,6 +119,7 @@ function apply_curse_internal(actor, id, amount)
 
     local actorData = actor:get_data()
     actorData[id] = math.min(amount, 1.0)
+    actorData["curseHelper-disable_shield_regen_sfx"] = false
 
     local maxhp = calc_curse(actorData)
     actor:recalculate_stats()
@@ -148,6 +146,7 @@ function add_curse_callbacks(actor, maxhp)
     actor:remove_callback("curseHelper-hpCap")
     -- actor:remove_callback("curseHelper-healReduction")
 
+    local actorData = actor:get_data()
     if maxhp < 1.0 then
         actor:onPostStep("curseHelper-hpCap", function(actor)
             actor.hp = math.min(actor.hp, actor.maxhp * maxhp)
@@ -155,8 +154,8 @@ function add_curse_callbacks(actor, maxhp)
 
             if actor.shield > actor.maxshield * maxhp then
                 actor.shield = actor.maxshield * maxhp
-                disable_shield_regen_sfx = 2
-            else disable_shield_regen_sfx = 0
+                actorData["curseHelper-disable_shield_regen_sfx"] = true
+            else actorData["curseHelper-disable_shield_regen_sfx"] = false
             end
         end)
 
@@ -164,7 +163,7 @@ function add_curse_callbacks(actor, maxhp)
         --     return heal_amount * maxhp
         -- end)
 
-    else disable_shield_regen_sfx = 0
+    else actorData["curseHelper-disable_shield_regen_sfx"] = false
     end
 end
 
@@ -172,7 +171,7 @@ end
 Callback.add("onPlayerHUDDraw", "curseHelper-playerCurseDisplay", function(player, hud_x, hud_y)
     local pData = player:get_data()
     if  pData["curseHelper-maxhp"]
-    and pData["curseHelper-maxhp"] < 1.0 then
+    and pData["curseHelper-maxhp"] < 1.0 then 
         gm.draw_rectangle(hud_x + 139 - ((1 - pData["curseHelper-maxhp"]) * 157), hud_y + 39, hud_x + 139, hud_y + 45, true)
     end
 end)
@@ -181,9 +180,9 @@ end)
 -- Contribution by @0n_x
 gm.post_script_hook(gm.constants.hud_draw_health, function(self, other, result, args)
     local actor = Instance.wrap(args[1].value)
-    if  self
-    and self.object_index == gm.constants.oP
-    and actor.m_id == Player.get_client().m_id
+    if  self 
+    and self.object_index == gm.constants.oP 
+    and actor.m_id == Player.get_client().m_id 
     and actor.maxhp ~= Curse.get_effective(actor) then
         gm.draw_set_color(Color.WHITE)
         gm.draw_rectangle(math.floor(actor.x + 0.5 + 37) - 75 * (1 - Curse.get_effective(actor) / actor.maxhp),
@@ -193,17 +192,12 @@ end)
 
 
 gm.pre_script_hook(gm.constants.sound_play_at, function(self, other, result, args)
-    if disable_shield_regen_sfx >= 2 and args[1].value == 282.0 then
-        disable_shield_regen_sfx = 2
-        return false
+    if self and args[1].value == 282.0 then
+        local actorData = Instance.wrap(self):get_data()
+        if actorData["curseHelper-disable_shield_regen_sfx"] then
+            return false
+        end
     end
 end)
-
-
-gm.post_script_hook(gm.constants.run_destroy, function(self, other, result, args)
-    disable_shield_regen_sfx = 0
-end)
-
-
 
 return Curse:lock()
